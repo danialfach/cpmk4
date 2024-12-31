@@ -10,6 +10,7 @@ class PengembalianBuku:
         self.parent = parent
         self.window = ttk.Toplevel(self.parent)
         self.window.title("Pengembalian Buku")
+        self.window.iconbitmap("./img/book.ico") 
         self.window.geometry("500x550")
         self.conn = sqlite3.connect("perpus.db")
         self.cursor = self.conn.cursor()
@@ -25,7 +26,7 @@ class PengembalianBuku:
         try:
             self.cursor.execute("UPDATE buku SET stok = stok + 1 WHERE judul = ?", (judul_buku,))
             self.cursor.execute("""
-                UPDATE riwayat_peminjaman 
+                UPDATE peminjaman 
                 SET tanggal_kembali = CURRENT_TIMESTAMP, status = 'dikembalikan'
                 WHERE judul_buku = ? AND status = 'dipinjam'
             """, (judul_buku,))
