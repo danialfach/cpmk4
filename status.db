@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS riwayat_peminjaman (
-    id_peminjaman INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_anggota INTEGER,
-    judul_buku TEXT,
-    tanggal_pinjam TEXT DEFAULT (datetime('now','localtime')),
-    tanggal_kembali TEXT,
-    status TEXT DEFAULT 'dipinjam',
-    FOREIGN KEY (id_anggota) REFERENCES anggota(id_anggota)
-);
