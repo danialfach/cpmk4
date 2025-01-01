@@ -2,9 +2,6 @@ import ttkbootstrap as ttk
 import sqlite3
 from ttkbootstrap.constants import *
 
-buku_dipinjam = []
-
-
 class PeminjamanBuku:
     def __init__(self, parent):
         self.parent = parent
@@ -44,17 +41,27 @@ class PeminjamanBuku:
             else:
                 # Update stock and record borrowing
                 self.cursor.execute("UPDATE buku SET stok = stok - 1 WHERE judul = ?", (judul_buku,))
-                self.cursor.execute("SELECT id_buku FROM buku WHERE judul = ?", (judul_buku,))
-                
                 self.cursor.execute("""
                     INSERT INTO peminjaman (id_anggota, judul_buku, status)
                     VALUES (?, ?, 'dipinjam')
                 """, (member[0], judul_buku))
-                buku_dipinjam.append(judul_buku)
                 self.conn.commit()
                 self.feedback_label.config(text=f"Peminjaman berhasil.", bootstyle=SUCCESS)
         except sqlite3.Error as e:
             self.feedback_label.config(text=f"Database error: {e}", bootstyle=DANGER)
+
+    def fetch_buku_dipinjam(self):
+        """Fetch all borrowed books from the database."""
+        try:
+            self.cursor.execute("""
+                SELECT peminjaman.judul_buku 
+                FROM peminjaman 
+                WHERE status = 'dipinjam'
+            """)
+            return [row[0] for row in self.cursor.fetchall()]
+        except sqlite3.Error as e:
+            print(f"Error fetching borrowed books: {e}")
+            return []
 
     def setup_ui(self):
         """Setup the user interface."""

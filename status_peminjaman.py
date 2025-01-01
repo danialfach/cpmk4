@@ -1,7 +1,6 @@
 import ttkbootstrap as ttk
 import sqlite3
 from ttkbootstrap.constants import *
-from peminjaman_buku import buku_dipinjam
 
 class StatusPeminjaman:
     def __init__(self, parent):
@@ -12,7 +11,6 @@ class StatusPeminjaman:
         self.window.geometry("600x400")
         self.conn = sqlite3.connect("perpus.db")
         self.cursor = self.conn.cursor()
-        self.buku_dipinjam = buku_dipinjam  # Local variable for tracking borrowed books
         self.setup_ui()
 
     def setup_ui(self):
@@ -48,6 +46,7 @@ class StatusPeminjaman:
                 SELECT buku.judul, peminjaman.status, buku.stok 
                 FROM buku 
                 JOIN peminjaman ON buku.judul = peminjaman.judul_buku
+                WHERE peminjaman.status = 'dipinjam'
             """)
             borrowed_books = self.cursor.fetchall()
 
@@ -87,9 +86,25 @@ class StatusPeminjaman:
             ttk.Label(self.window, text=f"Error updating stock: {e}", bootstyle=DANGER).pack(pady=5)
 
     def check_and_update_stock(self):
-        """Iterate through `buku_dipinjam` and decrease stock if necessary."""
-        for book_title in self.buku_dipinjam:
-            self.decrease_stock(book_title)
+        """Fetch and update stock for all borrowed books dynamically."""
+        try:
+            self.cursor.execute("""
+                SELECT peminjaman.judul_buku 
+                FROM peminjaman 
+                JOIN buku ON peminjaman.judul_buku = buku.judul
+                WHERE buku.stok <= 0 AND peminjaman.status = 'dipinjam'
+            """)
+            zero_stock_books = [row[0] for row in self.cursor.fetchall()]
+
+            for book_title in zero_stock_books:
+                for item in self.tree.get_children():
+                    values = self.tree.item(item, "values")
+                    if values[0] == book_title:
+                        self.tree.delete(item)
+                        break
+
+        except sqlite3.Error as e:
+            ttk.Label(self.window, text=f"Error checking stock: {e}", bootstyle=DANGER).pack(pady=5)
 
     def __del__(self):
         """Ensure the database connection is closed when the object is deleted."""
