@@ -75,7 +75,6 @@ root = ttk.Window(themename="journal", size=(700, 400))
 root.title("Perpustakaan Ngawi")
 root.iconbitmap("./img/book.ico")
 root.resizable(False, False)
-
 page1 = ttk.Frame(root)
 page2 = ttk.Frame(root)
 

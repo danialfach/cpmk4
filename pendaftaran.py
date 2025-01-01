@@ -5,7 +5,7 @@ class Registration:
         self.parent = parent
         self.window = ttk.Toplevel(self.parent)  # Create a new window for registration
         self.window.title("Registration")
-        self.window.iconbitmap("assets/img/book.ico")
+        self.window.iconbitmap("./img/book.ico")
         self.window.geometry("500x550")
         self.conn = sqlite3.connect("perpus.db")
         self.cursor = self.conn.cursor()
