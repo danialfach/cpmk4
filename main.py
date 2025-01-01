@@ -73,7 +73,7 @@ conn.close()
 # Main Window
 root = ttk.Window(themename="journal", size=(700, 400))
 root.title("Perpustakaan Ngawi")
-root.iconbitmap("./assets/img/book.ico")
+root.iconbitmap("./img/book.ico")
 root.resizable(False, False)
 
 page1 = ttk.Frame(root)
